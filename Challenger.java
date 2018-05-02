@@ -1,13 +1,12 @@
 package application;
 
 public class Challenger {
-	String name;
-	Integer rank;
+	private String name;
+	private Integer rank;
 
 	public Challenger() {
 		name = "";
 		rank = -1;
-		System.out.println("hi");
 	}
 
 	public Challenger(String name, Integer rank) {
