@@ -1,3 +1,4 @@
+package application;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,15 +13,19 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class GUI extends Application{
+public class GUI extends Application {
     private static int teamCount = 16; //the number of teams in the competition
     private static int numMatches; //the number of matches
     private static Label[][] teamNames; //stores the team name labels [matchNumber][teamNumber (0 or 1)]
     private static TextField[][] scoreInputs; //stores score input text fields [matchNumber][teamNumber (0 or 1)]
     private static Button[] buttons; //stores the submit buttons [matchNumber]
     private static Label champion; //the label for the champion
-
+    
+    private static Main tourney;
     public static void main(String[] args) {
+    	tourney = new Main();
+    	teamCount = tourney.getSize() + 1; //getsize is the number of games. in a single elim tournament, num of teams is games +1
+    	System.out.println("teams: " + teamCount);
         numMatches = 0;
         for(int i = teamCount/2; i >= 1; i = i/2) {
             numMatches += teamCount;
@@ -96,7 +101,7 @@ public class GUI extends Application{
         
         if(teamCount > 1) {
             for(int i = 0; i < teamCount; i++) {
-                teamNames[i/2][i%2].setText("Team " + (i + 1));
+                teamNames[i/2][i%2].setText(tourney.getTeam(i).getName());
             }
         }
         
