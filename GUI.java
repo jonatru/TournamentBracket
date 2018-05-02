@@ -84,7 +84,10 @@ public class GUI extends Application {
             vbox.getChildren().add(createVSpacer());
             mainBox.getChildren().addAll(vbox, createHSpacer());
             matchesInColumn = matchesInColumn/2;
+            
+
         }
+        
         vbox = new VBox();
         championBox = new HBox();
         champion = new Label("TBD");
@@ -101,7 +104,7 @@ public class GUI extends Application {
         
         if(teamCount > 1) {
             for(int i = 0; i < teamCount; i++) {
-                teamNames[i/2][i%2].setText(tourney.getTeam(i).getName());
+                teamNames[i/2][i%2].setText(tourney.getChallenge(i/2).getChallenger(i%2).getName());
             }
         }
         
