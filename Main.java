@@ -43,45 +43,22 @@ public class Main extends Application {
 		
 		for (int i = 0; i < teamnames.size()-1;i++) {
 			Challenge tempchallenge = new Challenge();
+			Challenger tempchallenger = new Challenger();
+			tempchallenge.setChallenger(0, tempchallenger);
+			tempchallenge.setChallenger(1, tempchallenger);
 			games.add(tempchallenge);
 		}
 		
-		//set up the challenges. first split the teams into two arrays. then each in each array
-		//the highes ranked team plays the lowest rank team, and so on. the winner of the two
-		//arrays plays for the 'ship. 
-		ArrayList<Integer> half1 = new ArrayList<Integer>();
-		ArrayList<Integer> half2 = new ArrayList<Integer>();
-		boolean arrayX = true; //which array to add to. X or Y
-		for (int i =0; i< teams.size();i++) {
-			if (arrayX) {
-				half1.add(i);
-			}
-			else {
-				half2.add(i);
-			}
-			if (i%2 == 0) {
-				arrayX = !arrayX;
-			}
+		for (int i = 0; i < teamnames.size();i++) {
+			games.get(i/2).setChallenger(i%2, teams.get(getfirstRoundOrder()[i]-1));
 		}
-		System.out.println(half1.size());
-		System.out.println(half2.size());
-		for (int i = 0; i < teams.size()/4;i++) {//set
-			games.get(i).setChallenger(0, teams.get(half1.get(i)));//higher ranked team
-			games.get(i).setChallenger(1, teams.get(half1.get(half1.size()-1-i)));
-			
-			games.get(i + teams.size()/4).setChallenger(0, teams.get(half2.get(i)));
-			games.get(i + teams.size()/4).setChallenger(1, teams.get(half2.get(half2.size()-1-i)));
-		}
-		/* verify that matches are setup correctly
 		for (int i = 0; i < teams.size()/2;i++) {
 			System.out.println(games.get(i).getChallenger(0).getName());
 			System.out.println("Vs " + games.get(i).getChallenger(1).getName() + "\n");
 		}
-		*/
-
     
-	//System.out.println(challenger2.getName());
 	GUI gui1 = new GUI();
+	System.out.println("MAin running");
 	gui1.main(args);
 	
 	}
@@ -93,6 +70,9 @@ public class Main extends Application {
 	}
 	
 	public boolean setScore(int challengeIndex, int [] scores) {
+		if (scores[0] == scores[1]) {
+			return false; //cannot submit a tie
+		}
 		games.get(challengeIndex).setScore(0, scores[0]);
 		games.get(challengeIndex).setScore(1, scores[1]);
 		if (scores[0] > scores[1]) {
@@ -101,8 +81,23 @@ public class Main extends Application {
 		else {
 			games.get(challengeIndex).setWinner(1);
 		}
+		System.out.println("Winner: "+games.get(challengeIndex).getWinner().getName());
+		if (challengeIndex == games.size()-1) {//this is the championship game
+			//tourney over. tell GUI?
+		}
+		else {
 		//to do: set winner as next round challenger
-		//to do: check if this was last game. if so tournament is done.
+		//next round challenge index = 
+		int thisGameRound = getRound(challengeIndex);
+		int roundsReverse = (int) (Math.log(teams.size())/Math.log(2)) - thisGameRound;//this is rounds from the back
+		int indexOfFirstgameofRound = (int) (games.size() - Math.pow(2, roundsReverse) + 1);
+		int nextRoundIndex = games.size()-((games.size()-challengeIndex)/2);
+		games.get(nextRoundIndex).setChallenger(challengeIndex%2, games.get(challengeIndex).getWinner());
+		for (int i = 0; i < games.size(); i ++ ) {
+			System.out.println("Game" + i + ": " + games.get(i).getChallenger(0).getName()+
+					"vs " + games.get(i).getChallenger(1).getName());
+		}
+		}
 		return true;
 	}
 	
@@ -118,4 +113,48 @@ public class Main extends Application {
 	public int getSize() {
 		return games.size();
 	}
+	
+	//given index of the challenge, returns the round that this game is in.
+	private static int getRound(int index) {
+		int round = 1;
+		int gamesThisRound = teams.size()/2;
+		int totalrounds = (int) (Math.log(teams.size())/Math.log(2));
+		System.out.println("totalrounds:" + totalrounds);;
+		int tempGames = 0;
+		for (int i = 1; i <= totalrounds; i++) {
+			tempGames = tempGames + gamesThisRound;
+			if (index +1 <= tempGames) {
+				return round;
+			}
+			else if (round == totalrounds) {
+				return round;
+			}
+			else {
+				round++;
+				gamesThisRound = gamesThisRound/2;
+			}
+		}
+		return -1;
+	}
+	
+	private static int[] getfirstRoundOrder(){
+		int[] array = null;
+		if (teams.size() == 0) {
+			
+		}
+		if (teams.size() == 16) {
+			array = new int[]{1, 16, 8, 9, 4, 13, 5,12,2,15,7,10,3,14,6,11};
+		}
+		if (teams.size() == 8) {
+			array = new int[]{1,8,4,5,3,6,2,7};
+		}
+		if (teams.size() == 4) {
+			array = new int[] {1,4,2,3};
+		}
+		if (teams.size() == 2) {
+			array = new int[] {1,2};
+		}
+		return array;
+	}
+	
 }
