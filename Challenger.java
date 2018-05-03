@@ -5,7 +5,7 @@ public class Challenger {
 	private Integer rank;
 
 	public Challenger() {
-		name = "";
+		name = "TBD";
 		rank = -1;
 	}
 
