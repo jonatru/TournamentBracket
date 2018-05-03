@@ -178,7 +178,7 @@ public class Main extends Application {
     private void updateNames() {
         if(teamCount > 1) {
         	System.out.println("nummatchs: " + numMatches);
-            for(int i = 0; i < numMatches*2-1; i++) {
+            for(int i = 0; i < numMatches*2; i++) {
                 teamNames[i/2][i%2].setText(tourney.getChallenge(i/2).getChallenger(i%2).getName());
             }
         }
