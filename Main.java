@@ -1,160 +1,187 @@
 package application;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	
-	static ArrayList<Challenger> teams = new ArrayList<Challenger>();
-	static ArrayList<Challenge> games = new ArrayList<Challenge>();
-	public static void main(String[] args) {
-	
-		//get name of teams
-        File file = new File(args[0]);
-        BufferedReader br;
-        ArrayList<String> teamnames = new ArrayList<String>();
-		try {
-			br = new BufferedReader(new FileReader(file));
-	        
-	        String line = br.readLine();
-	        while (line != null) {
-	            teamnames.add(line);
-	            line = br.readLine();}
-	        br.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error loading teams file");
-			e.printStackTrace();
-		}
-		
-		for (int i = 0; i < teamnames.size();i++){
-			Challenger tempteam = new Challenger();
-			tempteam.setName(teamnames.get(i));
-			tempteam.setRank(i+1);
-			teams.add(tempteam);
-		
-		}
-		
-		for (int i = 0; i < teamnames.size()-1;i++) {
-			Challenge tempchallenge = new Challenge();
-			Challenger tempchallenger = new Challenger();
-			tempchallenge.setChallenger(0, tempchallenger);
-			tempchallenge.setChallenger(1, tempchallenger);
-			games.add(tempchallenge);
-		}
-		
-		for (int i = 0; i < teamnames.size();i++) {
-			games.get(i/2).setChallenger(i%2, teams.get(getfirstRoundOrder()[i]-1));
-		}
-		for (int i = 0; i < teams.size()/2;i++) {
-			System.out.println(games.get(i).getChallenger(0).getName());
-			System.out.println("Vs " + games.get(i).getChallenger(1).getName() + "\n");
-		}
+    private static int teamCount = 0; //the number of teams in the competition
+    private static int numMatches; //the number of matches
+    private static Label[][] teamNames; //stores the team name labels [matchNumber][teamNumber (0 or 1)]
+    private static TextField[][] scoreInputs; //stores score input text fields [matchNumber][teamNumber (0 or 1)]
+    private static Button[] buttons; //stores the submit buttons [matchNumber]
+    private static Label champion; //the label for the champion
     
-	GUI gui1 = new GUI();
-	System.out.println("MAin running");
-	gui1.main(args);
-	
-	}
+    private static Tournament tourney;
+    public static void main(String[] args) {
+    	tourney = new Tournament(args);
+    	teamCount = (tourney.getSize() + 1); //getsize is the number of games. in a single elim tournament, num of teams is games +1
+    	System.out.println("teams: " + teamCount);
+        numMatches = teamCount-1;
+        //for(int i = teamCount/2; i >= 1; i = i/2) {
+          //  numMatches += teamCount;
+        //}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public boolean setScore(int challengeIndex, int [] scores) {
-		if (scores[0] == scores[1]) {
-			return false; //cannot submit a tie
-		}
-		games.get(challengeIndex).setScore(0, scores[0]);
-		games.get(challengeIndex).setScore(1, scores[1]);
-		if (scores[0] > scores[1]) {
-			games.get(challengeIndex).setWinner(0);
-		}
-		else {
-			games.get(challengeIndex).setWinner(1);
-		}
-		System.out.println("Winner: "+games.get(challengeIndex).getWinner().getName());
-		if (challengeIndex == games.size()-1) {//this is the championship game
-			//tourney over. tell GUI?
-		}
-		else {
-		//to do: set winner as next round challenger
-		//next round challenge index = 
-		int thisGameRound = getRound(challengeIndex);
-		int roundsReverse = (int) (Math.log(teams.size())/Math.log(2)) - thisGameRound;//this is rounds from the back
-		int indexOfFirstgameofRound = (int) (games.size() - Math.pow(2, roundsReverse) + 1);
-		int nextRoundIndex = games.size()-((games.size()-challengeIndex)/2);
-		games.get(nextRoundIndex).setChallenger(challengeIndex%2, games.get(challengeIndex).getWinner());
-		for (int i = 0; i < games.size(); i ++ ) {
-			System.out.println("Game" + i + ": " + games.get(i).getChallenger(0).getName()+
-					"vs " + games.get(i).getChallenger(1).getName());
-		}
-		}
-		return true;
-	}
-	
-	public Challenge getChallenge(int challengeIndex) {
-		return games.get(challengeIndex);
-	}
-	
-	public Challenger getTeam(int index) {
-		return teams.get(index);
-	}
-	
-	//returns number of games (which is teams -1)
-	public int getSize() {
-		return games.size();
-	}
-	
-	//given index of the challenge, returns the round that this game is in.
-	private static int getRound(int index) {
-		int round = 1;
-		int gamesThisRound = teams.size()/2;
-		int totalrounds = (int) (Math.log(teams.size())/Math.log(2));
-		System.out.println("totalrounds:" + totalrounds);;
-		int tempGames = 0;
-		for (int i = 1; i <= totalrounds; i++) {
-			tempGames = tempGames + gamesThisRound;
-			if (index +1 <= tempGames) {
-				return round;
-			}
-			else if (round == totalrounds) {
-				return round;
-			}
-			else {
-				round++;
-				gamesThisRound = gamesThisRound/2;
-			}
-		}
-		return -1;
-	}
-	
-	private static int[] getfirstRoundOrder(){
-		int[] array = null;
-		if (teams.size() == 0) {
-			
-		}
-		if (teams.size() == 16) {
-			array = new int[]{1, 16, 8, 9, 4, 13, 5,12,2,15,7,10,3,14,6,11};
-		}
-		if (teams.size() == 8) {
-			array = new int[]{1,8,4,5,3,6,2,7};
-		}
-		if (teams.size() == 4) {
-			array = new int[] {1,4,2,3};
-		}
-		if (teams.size() == 2) {
-			array = new int[] {1,2};
-		}
-		return array;
-	}
-	
+        launch(args);
+    }
+    
+    @Override
+    public void start(Stage primaryStage) {
+        HBox mainBox = new HBox(); //contains all of the VBox columns of matches
+        Scene tournament = new Scene(mainBox, 1100, 1000);
+        VBox vbox; //contains a column of matches
+        VBox matchVBox; //VBox that contains each match
+        HBox hbox1; //contains team name and score input for team 1
+        HBox hbox2; //contains team name and score input for team 2
+        HBox championBox;
+        
+        mainBox.setStyle("-fx-background-color: #FFEBCD;");
+        
+        teamNames = new Label[numMatches][2];
+        scoreInputs = new TextField[numMatches][2];
+        buttons = new Button[numMatches];
+        
+        for(int i = 0; i < teamNames.length; i++) {
+            for(int j = 0; j < teamNames[0].length; j++) {
+                teamNames[i][j] = new Label("TBD");
+                teamNames[i][j].setAlignment(Pos.CENTER); teamNames[i][j].setMinHeight(25); teamNames[i][j].setMinWidth(80); teamNames[i][j].setTextFill(Color.BLACK);
+            }
+        }
+        
+        for(int i = 0; i < scoreInputs.length; i++) {
+            for(int j = 0; j < scoreInputs[0].length; j++) {
+                scoreInputs[i][j] = new TextField();
+                scoreInputs[i][j].setAlignment(Pos.CENTER_RIGHT); scoreInputs[i][j].setMaxWidth(50);
+                scoreInputs[i][j].setPromptText("Score");
+            }
+        }
+        
+        for(int i = 0; i < buttons.length; i++) {
+        	final int index = i;
+            buttons[i] = new Button("Submit");
+            buttons[i].setOnAction(new EventHandler<ActionEvent>() {
+            	
+                @Override
+                public void handle(ActionEvent event) {
+                	int[] scores = new int[2];
+                	
+                	scores[0] = Integer.parseInt(scoreInputs[index][0].getText());
+                	scores[1] = Integer.parseInt(scoreInputs[index][1].getText());
+                	
+                    tourney.setScore(index, scores);
+                    updateNames();
+                }
+            });
+        }
+        
+        int matchesInColumn = teamCount/2;
+        int matchNumber = 0;
+        for(int i = 0; i < Math.log(teamCount)/Math.log(2); i++) {
+            vbox = new VBox();
+            vbox.setAlignment(Pos.CENTER); vbox.setPadding(new Insets(5,0,5,10));
+            for(int j = 0; j < matchesInColumn; j++) { //this loop creates VBoxes for each match and adds them to the column VBox
+                vbox.getChildren().add(createVSpacer()); //creates an expanding spacer between each match
+                hbox1 = createTeamHBox(matchNumber, 0);
+                hbox2 = createTeamHBox(matchNumber, 1);
+                matchVBox = createMatchVBox(hbox1, hbox2, matchNumber);
+                vbox.getChildren().add(matchVBox); //adds the match VBox to the column of matches
+                matchNumber++;
+            }
+            vbox.getChildren().add(createVSpacer());
+            mainBox.getChildren().addAll(vbox, createHSpacer());
+            matchesInColumn = matchesInColumn/2;
+
+        }
+        
+        vbox = new VBox();
+        championBox = new HBox();
+        champion = new Label("TBD");
+        championBox.getChildren().addAll(new Label("Champion: "), champion);
+        championBox.setAlignment(Pos.CENTER);
+        championBox.setPadding(new Insets(5, 5, 5, 5));
+        championBox.setStyle("-fx-border-color: black;\n" +
+                             "-fx-border-width: 1;\n" +
+                             "-fx-background-color: #FFC44E;");
+        championBox.setMinWidth(120);
+        vbox.getChildren().addAll(createVSpacer(), championBox, createVSpacer());
+        vbox.setAlignment(Pos.CENTER); vbox.setPadding(new Insets(0,40,0,10));
+        mainBox.getChildren().add(vbox);
+        
+
+       // testInput();
+        updateNames();
+        primaryStage.setScene(tournament);
+        primaryStage.show();
+    }
+    
+    /**
+     * Creates a new HBox for the team name and score input 
+     * @param matchNumber
+     * @param teamNumber the 
+     * @return HBox
+     */
+    private HBox createTeamHBox(int matchNumber, int teamNumber) {
+        HBox hbox = new HBox();
+        hbox.setPadding(new Insets(5, 5, 5, 5)); hbox.setSpacing(10);
+        hbox.getChildren().addAll(teamNames[matchNumber][teamNumber], scoreInputs[matchNumber][teamNumber]);
+        return hbox;
+    }
+    
+    /**
+     * 
+     * @param team1 the HBox for team 1 in the match
+     * @param team2 the HBox for team 2 in the match
+     * @param matchNumber
+     * @return VBox
+     */
+    private VBox createMatchVBox(HBox team1, HBox team2, int matchNumber) {
+        VBox vbox = new VBox();
+        vbox.setPadding(new Insets(5, 5, 5, 5));
+        vbox.setStyle("-fx-border-color: black;\n" +
+                      "-fx-border-width: 1;\n" +
+                      "-fx-background-color: #FF7B5F;");
+        vbox.setAlignment(Pos.CENTER_RIGHT);
+        vbox.getChildren().addAll(team1, buttons[matchNumber], team2);
+        return vbox;
+    }
+    
+    /**
+     * Creates a new vertical spacer region
+     * @return Region
+     */
+    private Region createVSpacer() {
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+        return spacer;
+    }
+    
+    /**
+     * Creates a new vertical spacer region
+     * @return Region
+     */
+    private Region createHSpacer() {
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        return spacer;
+    }
+    private void updateNames() {
+        if(teamCount > 1) {
+        	System.out.println("nummatchs: " + numMatches);
+            for(int i = 0; i < numMatches*2-1; i++) {
+                teamNames[i/2][i%2].setText(tourney.getChallenge(i/2).getChallenger(i%2).getName());
+            }
+        }
+    }
+     
 }
