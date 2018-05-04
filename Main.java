@@ -230,16 +230,37 @@ public class Main extends Application {
     }
     
     public static void updateChampion(){
-        String winner = tourney.getChallenge(numMatches-1).getWinner().getName();
-        String runnerup;
-        if (tourney.getChallenge(numMatches-1).getChallenger(0).getName().equals(winner)) {
-            runnerup = tourney.getChallenge(numMatches - 1).getChallenger(1).getName();
+        String firstString = tourney.getChallenge(numMatches-1).getWinner().getName();
+        String secondString;
+        if (tourney.getChallenge(numMatches-1).getChallenger(0).getName().equals(firstString)) {
+            secondString = tourney.getChallenge(numMatches - 1).getChallenger(1).getName();
         } else {
-            runnerup = tourney.getChallenge(numMatches - 1).getChallenger(0).getName();
+            secondString = tourney.getChallenge(numMatches - 1).getChallenger(0).getName();
         }
-        String thirdplace;
-        champion.setText(winner);
-        second.setText(runnerup);
+        String thirdString;
+        int third1; //1st contestant for 3rd place
+        int third2; //2nd contestan for 3rd place
+        if (tourney.getChallenge(numMatches-2).getChallenger(0).getName().equals(firstString) ||
+                tourney.getChallenge(numMatches-2).getChallenger(0).getName().equals(secondString)) {
+            third1 = 1;
+        } else {
+            third1 = 0;
+        }
+        if (tourney.getChallenge(numMatches-3).getChallenger(0).getName().equals(firstString) ||
+                tourney.getChallenge(numMatches-3).getChallenger(0).getName().equals(secondString)) {
+            third2 = 1;
+        } else {
+            third2 = 0;
+        }
+        if (tourney.getChallenge(numMatches-2).getScore(third1) >
+                tourney.getChallenge(numMatches-3).getScore(third2)) {
+            thirdString = tourney.getChallenge(numMatches-2).getChallenger(third1).getName();
+        } else {
+            thirdString = tourney.getChallenge(numMatches-3).getChallenger(third2).getName();
+        }
+        champion.setText(firstString);
+        second.setText(secondString);
+        third.setText(thirdString);
     }
 
      
