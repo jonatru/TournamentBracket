@@ -23,6 +23,8 @@ public class Main extends Application {
     private static Label[] finalScores; // stores the final scores of each game [matchNumber]
     private static Button[] buttons; //stores the submit buttons [matchNumber]
     private static Label champion; //the label for the champion
+    private static Label second; //the label for the second place
+    private static Label third; //the label for the third place
     
     private static Tournament tourney;
     public static void main(String[] args) {
@@ -46,6 +48,9 @@ public class Main extends Application {
         HBox hbox1; //contains team name and score input for team 1
         HBox hbox2; //contains team name and score input for team 2
         HBox championBox;
+        HBox secondBox;
+        HBox thirdBox;
+
         
         mainBox.setStyle("-fx-background-color: #FFEBCD;");
         
@@ -116,15 +121,35 @@ public class Main extends Application {
         
         vbox = new VBox();
         championBox = new HBox();
+        secondBox = new HBox();
+        thirdBox = new HBox();
         champion = new Label("TBD");
+        second = new Label("TBD");
+        third = new Label("TBD");
         championBox.getChildren().addAll(new Label("Champion: "), champion);
+        secondBox.getChildren().addAll(new Label("Second: "), second);
+        thirdBox.getChildren().addAll(new Label("Third: "), third);
         championBox.setAlignment(Pos.CENTER);
         championBox.setPadding(new Insets(5, 5, 5, 5));
         championBox.setStyle("-fx-border-color: black;\n" +
-                             "-fx-border-width: 1;\n" +
-                             "-fx-background-color: #FFC44E;");
+                "-fx-border-width: 1;\n" +
+                "-fx-background-color: #FFC44E;" +
+                "-fx-font-size: 20px;");
         championBox.setMinWidth(120);
-        vbox.getChildren().addAll(createVSpacer(), championBox, createVSpacer());
+        secondBox.setStyle("-fx-border-color: black;\n" +
+                "-fx-border-width: 1;\n" +
+                "-fx-background-color: #C0C0C0;" +
+                "-fx-font-size: 18px;");
+        secondBox.setAlignment(Pos.CENTER);
+        secondBox.setPadding(new Insets(5, 5, 5, 5));
+        thirdBox.setStyle("-fx-border-color: black;\n" +
+                "-fx-border-width: 1;\n" +
+                "-fx-background-color: #CD7F32;" +
+                "-fx-font-size: 18px;");
+        thirdBox.setAlignment(Pos.CENTER);
+        thirdBox.setPadding(new Insets(5, 5, 5, 5));
+        vbox.getChildren().addAll(createVSpacer(), championBox, secondBox, thirdBox,
+                createVSpacer());
         vbox.setAlignment(Pos.CENTER); vbox.setPadding(new Insets(0,40,0,10));
         mainBox.getChildren().add(vbox);
         
@@ -203,5 +228,40 @@ public class Main extends Application {
                 finalScores[matchNumber].setText("FINAL: "+Integer.parseInt(scoreInputs[matchNumber][0].getText())+" - "+Integer.parseInt(scoreInputs[matchNumber][1].getText()));
         }
     }
+    
+    public static void updateChampion(){
+        String firstString = tourney.getChallenge(numMatches-1).getWinner().getName();
+        String secondString;
+        if (tourney.getChallenge(numMatches-1).getChallenger(0).getName().equals(firstString)) {
+            secondString = tourney.getChallenge(numMatches - 1).getChallenger(1).getName();
+        } else {
+            secondString = tourney.getChallenge(numMatches - 1).getChallenger(0).getName();
+        }
+        String thirdString;
+        int third1; //1st contestant for 3rd place
+        int third2; //2nd contestan for 3rd place
+        if (tourney.getChallenge(numMatches-2).getChallenger(0).getName().equals(firstString) ||
+                tourney.getChallenge(numMatches-2).getChallenger(0).getName().equals(secondString)) {
+            third1 = 1;
+        } else {
+            third1 = 0;
+        }
+        if (tourney.getChallenge(numMatches-3).getChallenger(0).getName().equals(firstString) ||
+                tourney.getChallenge(numMatches-3).getChallenger(0).getName().equals(secondString)) {
+            third2 = 1;
+        } else {
+            third2 = 0;
+        }
+        if (tourney.getChallenge(numMatches-2).getScore(third1) >
+                tourney.getChallenge(numMatches-3).getScore(third2)) {
+            thirdString = tourney.getChallenge(numMatches-2).getChallenger(third1).getName();
+        } else {
+            thirdString = tourney.getChallenge(numMatches-3).getChallenger(third2).getName();
+        }
+        champion.setText(firstString);
+        second.setText(secondString);
+        third.setText(thirdString);
+    }
+
      
 }
