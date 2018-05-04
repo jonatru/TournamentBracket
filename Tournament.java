@@ -86,6 +86,7 @@ public class Tournament extends Application {
 		System.out.println("Winner: "+games.get(challengeIndex).getWinner().getName());
 		if (challengeIndex == games.size()-1) {//this is the championship game
 			System.out.println("Tourney over! Winner is: " + games.get(challengeIndex).getWinner().getName());
+			Main.updateChampion();
 		}
 		else {
 		//to do: set winner as next round challenger
