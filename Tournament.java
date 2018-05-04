@@ -49,6 +49,12 @@ public class Tournament {
 			e.printStackTrace();
 		}
 		
+		if (teamnames.size() == 0) {
+			Challenger tempteam = new Challenger();
+			tempteam.setName("No entrants");
+			tempteam.setRank(1);
+			teams.add(tempteam);
+		}
 		for (int i = 0; i < teamnames.size();i++){
 			Challenger tempteam = new Challenger();
 			tempteam.setName(teamnames.get(i));
@@ -64,9 +70,11 @@ public class Tournament {
 			games.add(tempchallenge);
 		}
 		
-		//gets the seeding based on the number of teams and sets the challenges.
-		for (int i = 0; i < teamnames.size();i++) {
-			games.get(i/2).setChallenger(i%2, teams.get(getfirstRoundOrder()[i]-1));
+		if (teams.size() > 1) {
+			//gets the seeding based on the number of teams and sets the challenges.
+			for (int i = 0; i < teamnames.size();i++) {
+				games.get(i/2).setChallenger(i%2, teams.get(getfirstRoundOrder()[i]-1));
+			}
 		}
 		//status information
 		for (int i = 0; i < teams.size()/2;i++) {
@@ -118,6 +126,18 @@ public class Tournament {
 	 * @return
 	 */
 	public Challenge getChallenge(int challengeIndex) {
+		if (challengeIndex > games.size()-1|| challengeIndex < 0) {
+			if(teams.size()>1) {
+			return games.get(0);
+			}
+			else {
+				Challenge temp1 = new Challenge();
+				temp1.setChallenger(0, teams.get(0));
+				temp1.setChallenger(1, teams.get(0));
+				temp1.setWinner(0);
+				return temp1;
+			}
+		}
 		return games.get(challengeIndex);
 	}
 	
