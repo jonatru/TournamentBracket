@@ -5,16 +5,31 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javafx.application.Application;
-import javafx.stage.Stage;
-
+///////////////////////////////////////////////////////////////////////////////
+//
+//Title:            JavaFX Tournament Bracket A-team 66
+//Files:            Main.java, Tournament.java, Challenge.java, Challenger.java
+//Semester:         CS 400 Spring 2018
+//
+//Author:           Brandon Jonen,  JOSHUA MATHEWS, MICHAEL O'CONNOR, JONATHON TRUTTMANN
+//Email:            bjonen@wisc.edu
+//CS Login:         jonen,
+//Lecturer's Name:  Deb Deppeler
+//
+/**
+ * The tournament class is instantiated by the MAin class. It loads the input file
+ * and keeps track of challenges, challengers, winners, losers, status, among others.
+ * @author jonen, Mathews, O'Connor, Truttmann
+ */
 public class Tournament {
 	
-	static ArrayList<Challenger> teams = new ArrayList<Challenger>();
-	static ArrayList<Challenge> games = new ArrayList<Challenge>();
+	static ArrayList<Challenger> teams = new ArrayList<Challenger>();//all the teams in the tournament
+	static ArrayList<Challenge> games = new ArrayList<Challenge>();//the games in the tournament
 	
-
+	/**
+	 * constructor. Sets up the initial tournament
+	 * @param args that were passed into Main.java. Should contain a pointer to a file containg teams
+	 */
 	public Tournament(String[] args) {
 		//get name of teams
         File file = new File(args[0]);
@@ -39,7 +54,6 @@ public class Tournament {
 			tempteam.setName(teamnames.get(i));
 			tempteam.setRank(i+1);
 			teams.add(tempteam);
-		
 		}
 		
 		for (int i = 0; i < teamnames.size()-1;i++) {
@@ -50,16 +64,24 @@ public class Tournament {
 			games.add(tempchallenge);
 		}
 		
+		//gets the seeding based on the number of teams and sets the challenges.
 		for (int i = 0; i < teamnames.size();i++) {
 			games.get(i/2).setChallenger(i%2, teams.get(getfirstRoundOrder()[i]-1));
 		}
+		//status information
 		for (int i = 0; i < teams.size()/2;i++) {
 			System.out.println(games.get(i).getChallenger(0).getName());
 			System.out.println("Vs " + games.get(i).getChallenger(1).getName() + "\n");
 		}
 	}
 	
-	
+	/**
+	 * CAlled by the GUI. based on the score, it determines winner and sets the challenger for the next game.
+	 * Checks if it was the last game.
+	 * @param challengeIndex
+	 * @param scores
+	 * @return boolean
+	 */
 	public boolean setScore(int challengeIndex, int [] scores) {
 		if (scores[0] == scores[1]) {
 			return false; //cannot submit a tie
@@ -72,63 +94,54 @@ public class Tournament {
 		else {
 			games.get(challengeIndex).setWinner(1);
 		}
+		
 		System.out.println("Winner: "+games.get(challengeIndex).getWinner().getName());
+		
 		if (challengeIndex == games.size()-1) {//this is the championship game
 			System.out.println("Tourney over! Winner is: " + games.get(challengeIndex).getWinner().getName());
 			Main.updateChampion();
 		}
 		else {
-		//to do: set winner as next round challenger
-		//next round challenge index = 
-		int thisGameRound = getRound(challengeIndex);
-		int roundsReverse = (int) (Math.log(teams.size())/Math.log(2)) - thisGameRound;//this is rounds from the back
-		int indexOfFirstgameofRound = (int) (games.size() - Math.pow(2, roundsReverse) + 1);
-		int nextRoundIndex = games.size()-((games.size()-challengeIndex)/2);
-		games.get(nextRoundIndex).setChallenger(challengeIndex%2, games.get(challengeIndex).getWinner());
-		for (int i = 0; i < games.size(); i ++ ) {
-			System.out.println("Game" + i + ": " + games.get(i).getChallenger(0).getName()+
-					" vs " + games.get(i).getChallenger(1).getName());
-		}
+			int nextRoundIndex = games.size()-((games.size()-challengeIndex)/2);
+			games.get(nextRoundIndex).setChallenger(challengeIndex%2, games.get(challengeIndex).getWinner());
+			for (int i = 0; i < games.size(); i ++ ) {
+				System.out.println("Game" + i + ": " + games.get(i).getChallenger(0).getName()+
+						" vs " + games.get(i).getChallenger(1).getName());
+			}
 		}
 		return true;
 	}
 	
+	/**
+	 * Returns a challenge of the tournament. Challenges are indexed in round order (championship game is last)
+	 * @param challengeIndex
+	 * @return
+	 */
 	public Challenge getChallenge(int challengeIndex) {
 		return games.get(challengeIndex);
 	}
 	
+	/**
+	 * Get a specific team in the tournament. indexed in same order as input file
+	 * @param index
+	 * @return
+	 */
 	public Challenger getTeam(int index) {
 		return teams.get(index);
 	}
 	
-	//returns number of games (which is teams -1)
+	/**
+	 * Return number of games in the tournamet
+	 * @return
+	 */
 	public int getSize() {
 		return games.size();
 	}
 	
-	//given index of the challenge, returns the round that this game is in.
-	private static int getRound(int index) {
-		int round = 1;
-		int gamesThisRound = teams.size()/2;
-		int totalrounds = (int) (Math.log(teams.size())/Math.log(2));
-		System.out.println("totalrounds:" + totalrounds);;
-		int tempGames = 0;
-		for (int i = 1; i <= totalrounds; i++) {
-			tempGames = tempGames + gamesThisRound;
-			if (index +1 <= tempGames) {
-				return round;
-			}
-			else if (round == totalrounds) {
-				return round;
-			}
-			else {
-				round++;
-				gamesThisRound = gamesThisRound/2;
-			}
-		}
-		return -1;
-	}
-	
+	/**Helper function
+	 * Looks at team size and returns an array of the order of seedings in the tournament.
+	 * @return
+	 */
 	private static int[] getfirstRoundOrder(){
 		int[] array = null;
 		if (teams.size() == 0) {
