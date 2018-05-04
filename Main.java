@@ -20,13 +20,14 @@ public class Main extends Application {
     private static int numMatches; //the number of matches
     private static Label[][] teamNames; //stores the team name labels [matchNumber][teamNumber (0 or 1)]
     private static TextField[][] scoreInputs; //stores score input text fields [matchNumber][teamNumber (0 or 1)]
+    private static Label[] finalScores; // stores the final scores of each game [matchNumber]
     private static Button[] buttons; //stores the submit buttons [matchNumber]
     private static Label champion; //the label for the champion
     
     private static Tournament tourney;
     public static void main(String[] args) {
     	tourney = new Tournament(args);
-    	teamCount = (tourney.getSize() + 1); //getsize is the number of games. in a single elim tournament, num of teams is games +1
+    	teamCount = (tourney.getSize() + 1); //getSize is the number of games. in a single elim tournament, num of teams is games +1
     	System.out.println("teams: " + teamCount);
         numMatches = teamCount-1;
         //for(int i = teamCount/2; i >= 1; i = i/2) {
@@ -51,6 +52,7 @@ public class Main extends Application {
         teamNames = new Label[numMatches][2];
         scoreInputs = new TextField[numMatches][2];
         buttons = new Button[numMatches];
+        finalScores = new Label[numMatches];
         
         for(int i = 0; i < teamNames.length; i++) {
             for(int j = 0; j < teamNames[0].length; j++) {
@@ -67,6 +69,12 @@ public class Main extends Application {
             }
         }
         
+        for(int i = 0; i < finalScores.length; i++) {
+//            final int index = i;
+            finalScores[i] = new Label("FINAL: ");
+            finalScores[i].setAlignment(Pos.CENTER_LEFT);
+        }
+        
         for(int i = 0; i < buttons.length; i++) {
         	final int index = i;
             buttons[i] = new Button("Submit");
@@ -81,6 +89,7 @@ public class Main extends Application {
                 	
                     tourney.setScore(index, scores);
                     updateNames();
+                    updateFinal(index);
                 }
             });
         }
@@ -94,6 +103,7 @@ public class Main extends Application {
                 vbox.getChildren().add(createVSpacer()); //creates an expanding spacer between each match
                 hbox1 = createTeamHBox(matchNumber, 0);
                 hbox2 = createTeamHBox(matchNumber, 1);
+                
                 matchVBox = createMatchVBox(hbox1, hbox2, matchNumber);
                 vbox.getChildren().add(matchVBox); //adds the match VBox to the column of matches
                 matchNumber++;
@@ -152,9 +162,10 @@ public class Main extends Application {
                       "-fx-border-width: 1;\n" +
                       "-fx-background-color: #FF7B5F;");
         vbox.setAlignment(Pos.CENTER_RIGHT);
-        vbox.getChildren().addAll(team1, buttons[matchNumber], team2);
+        vbox.getChildren().addAll(team1, buttons[matchNumber], finalScores[matchNumber], team2);
         return vbox;
     }
+    
     
     /**
      * Creates a new vertical spacer region
@@ -177,10 +188,19 @@ public class Main extends Application {
     }
     private void updateNames() {
         if(teamCount > 1) {
-        	System.out.println("nummatchs: " + numMatches);
+            System.out.println("nummatchs: " + numMatches);
             for(int i = 0; i < numMatches*2; i++) {
                 teamNames[i/2][i%2].setText(tourney.getChallenge(i/2).getChallenger(i%2).getName());
             }
+        }
+    }
+    /**
+     * Updates the VBox to include the final score of the game
+     * @param matchNumber
+     */
+    private void updateFinal(int matchNumber) {
+        if(teamCount > 1) {
+                finalScores[matchNumber].setText("FINAL: "+Integer.parseInt(scoreInputs[matchNumber][0].getText())+" - "+Integer.parseInt(scoreInputs[matchNumber][1].getText()));
         }
     }
      
