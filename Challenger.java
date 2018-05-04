@@ -1,6 +1,17 @@
 package application;
+///////////////////////////////////////////////////////////////////////////////
+//
+//Title:            JavaFX Tournament Bracket A-team 66
+//Files:            Main.java, Tournament.java, Challenge.java, Challenger.java
+//Semester:         CS 400 Spring 2018
+//
+//Author:           Brandon Jonen,  JOSHUA MATHEWS, MICHAEL O'CONNOR, JONATHON TRUTTMANN
+//Email:            bjonen@wisc.edu
+//CS Login:         jonen,
+//Lecturer's Name:  Deb Deppeler
 /*
- * 
+ * The challenger class represents a single entrant into the tournament. Each entrant has a 
+ * name and rank. 
  */
 public class Challenger {
 	private String name;//Name of the challenger
