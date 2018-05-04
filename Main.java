@@ -245,6 +245,9 @@ public class Main extends Application {
                 teamNames[i/2][i%2].setText(tourney.getChallenge(i/2).getChallenger(i%2).getName());
             }
         }
+        else {
+        	updateChampion();
+        }
     }
     /**
      * Updates the VBox to include the final score of the game
