@@ -25,21 +25,23 @@ public class Challenger {
 		rank = -1;
 	}
 
-	/*Additional Contructor initializing name and rank to those given.
-	 * 
+	/**Additional Contructor initializing name and rank to those given.
+	 * @param name, reank
 	 */
 	public Challenger(String name, Integer rank) {
 		this.name = name;
 		this.rank = rank;
 	}
-	/*
-	 * Returns the name of the Challenger
+	/**
+	 * @return String
 	 */
 	public String getName() {
 		return name;
 	}
-	/*
-	 * Sets the name of the challenger. returns false if attempting to use a null name
+	/**
+	 * Sets the name of the challenger. returns false if attempting to give null name
+	 * @param name
+	 * @return boolean
 	 */
 	public boolean setName(String name) {
 		if (name == null) {
@@ -49,15 +51,18 @@ public class Challenger {
 		return true;
 	}
 	
-	/*
+	/**
 	 * Returns rank of the challenger
+	 * @return Integer
 	 */
 	public Integer getRank() {
 		return this.rank;
 	}
 	
-	/*
+	/**
 	 * Sets the rank of the challenger.
+	 * @param rank
+	 * @return Boolean
 	 */
 	public Boolean setRank(Integer rank) {
 		if (rank == null) {
