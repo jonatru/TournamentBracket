@@ -15,6 +15,27 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//Title:            JavaFX Tournament Bracket A-team 66
+//Files:            Main.java, Tournament.java, Challenge.java, Challenger.java
+//Semester:         CS 400 Spring 2018
+//
+//Author:           Brandon Jonen,  JOSHUA MATHEWS, MICHAEL O'CONNOR, JONATHON TRUTTMANN
+//Email:            bjonen@wisc.edu
+//CS Login:         jonen,
+//Lecturer's Name:  Deb Deppeler
+//
+
+/*
+ * The main class of the tournament program. This class contains the functions for setting up the gui.
+ * It instantiates the tournament class, which instantiates challenges and challengers as per the input 
+ * teams file. 
+ * Main takes an argument which is the filename of a file containing the names of the challengers 
+ * in order of their rank.
+ * It is expected the teams list is a power of two in size. The games are setup in seeded order.
+ * once the final game score has been set, a winner, second place, and third place are shown.
+ */
 public class Main extends Application {
     private static int teamCount = 0; //the number of teams in the competition
     private static int numMatches; //the number of matches
@@ -32,9 +53,6 @@ public class Main extends Application {
     	teamCount = (tourney.getSize() + 1); //getSize is the number of games. in a single elim tournament, num of teams is games +1
     	System.out.println("teams: " + teamCount);
         numMatches = teamCount-1;
-        //for(int i = teamCount/2; i >= 1; i = i/2) {
-          //  numMatches += teamCount;
-        //}
 
         launch(args);
     }
@@ -75,7 +93,6 @@ public class Main extends Application {
         }
         
         for(int i = 0; i < finalScores.length; i++) {
-//            final int index = i;
             finalScores[i] = new Label("FINAL: ");
             finalScores[i].setAlignment(Pos.CENTER_LEFT);
         }
@@ -92,13 +109,19 @@ public class Main extends Application {
                 	scores[0] = Integer.parseInt(scoreInputs[index][0].getText());
                 	scores[1] = Integer.parseInt(scoreInputs[index][1].getText());
                 	
-                    tourney.setScore(index, scores);
-                    updateNames();
-                    updateFinal(index);
+                	boolean validUpdate = tourney.setScore(index, scores);
+                     updateNames();//now that scores have been sent, 
+                    if (validUpdate) {
+                    	updateFinal(index);
+                    }
+                    else {
+                    	System.out.println("Cannot submit score of tie game");
+                    }
                 }
             });
         }
         
+        //This sections sets up the tournament structure
         int matchesInColumn = teamCount/2;
         int matchNumber = 0;
         for(int i = 0; i < Math.log(teamCount)/Math.log(2); i++) {
@@ -119,6 +142,7 @@ public class Main extends Application {
 
         }
         
+        //This section sets up the Champion/podium area
         vbox = new VBox();
         championBox = new HBox();
         secondBox = new HBox();
@@ -154,7 +178,6 @@ public class Main extends Application {
         mainBox.getChildren().add(vbox);
         
 
-       // testInput();
         updateNames();
         primaryStage.setScene(tournament);
         primaryStage.show();
@@ -211,6 +234,10 @@ public class Main extends Application {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         return spacer;
     }
+    
+    /**
+     * Gets the names of the current set of challengers from the tournament class
+     */
     private void updateNames() {
         if(teamCount > 1) {
             System.out.println("nummatchs: " + numMatches);
@@ -228,7 +255,10 @@ public class Main extends Application {
                 finalScores[matchNumber].setText("FINAL: "+Integer.parseInt(scoreInputs[matchNumber][0].getText())+" - "+Integer.parseInt(scoreInputs[matchNumber][1].getText()));
         }
     }
-    
+    /**
+     * Sets the top 3 positions after the tournament ends
+     * 
+     */
     public static void updateChampion(){
         String firstString = tourney.getChallenge(numMatches-1).getWinner().getName();
         String secondString;
