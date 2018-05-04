@@ -9,18 +9,11 @@ import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-public class Tournament extends Application {
+public class Tournament {
 	
 	static ArrayList<Challenger> teams = new ArrayList<Challenger>();
 	static ArrayList<Challenge> games = new ArrayList<Challenge>();
 	
-	public static void main(String[] args) {
-	
-	//GUI gui1 = new GUI();
-	//System.out.println("MAin running");
-	//gui1.main(args);
-	
-	}
 
 	public Tournament(String[] args) {
 		//get name of teams
@@ -65,11 +58,7 @@ public class Tournament extends Application {
 			System.out.println("Vs " + games.get(i).getChallenger(1).getName() + "\n");
 		}
 	}
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 	public boolean setScore(int challengeIndex, int [] scores) {
 		if (scores[0] == scores[1]) {
